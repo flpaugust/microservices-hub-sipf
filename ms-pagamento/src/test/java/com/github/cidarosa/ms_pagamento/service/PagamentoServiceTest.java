@@ -105,6 +105,15 @@ public class PagamentoServiceTest {
         Assertions.assertEquals(dto.getValor(), pagamento.getValor());
     }
 
+    @Test
+    public void createPagamentoShouldReturnPagamentoDTOWhenPagamentoIsCreated() {
+        PagamentoDTO dto = service.createPagamento(pagamentoDTO);
+
+        Assertions.assertNotNull(dto);
+        Assertions.assertEquals(dto.getId(), pagamento.getId());
+    }
+
+
 
 
 
