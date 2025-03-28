@@ -49,6 +49,22 @@ public class PagamentoRepositoryTest {
         Assertions.assertEquals(countTotalPagamento + 1, pagamento.getId());
     }
 
+    @Test
+    public void givenAnExistingId_whenCallFindById_thenReturnNonEmptyOptional(){
+
+        Optional<Pagamento> result = repository.findById(existingId);
+        Assertions.assertTrue(result.isPresent());
+    }
+
+    @Test
+    public void givenANonExistingId_whenCallFindById_thenReturnAnEmptyOptional(){
+
+        Optional<Pagamento> result = repository.findById(nonExistingId);
+        Assertions.assertFalse(result.isPresent());
+        //ou
+        Assertions.assertTrue(result.isEmpty());
+    }
+
 
 
 
