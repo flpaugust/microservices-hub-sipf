@@ -2,8 +2,8 @@ package com.github.cidarosa.ms_pagamento.repository;
 
 
 import com.github.cidarosa.ms_pagamento.entity.Pagamento;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import com.github.cidarosa.ms_pagamento.tests.Factory;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
@@ -15,15 +15,38 @@ public class PagamentoRepositoryTest {
     @Autowired
     private PagamentoRepository repository;
 
+    //declarando variáveis
+    private Long existingId;
+    private Long nonExistingId;
+    private Long countTotalPagamento;
+
+    @BeforeEach
+    void setup() throws Exception{
+        existingId = 1L;
+        nonExistingId = 100L;
+        countTotalPagamento = 3L;
+
+    }
+
     @Test
     public void deleteShouldDeleteObjectWhenIdExists(){
-        //Arrange
-        Long existingId = 1L;
+
         //Act
         repository.deleteById(existingId);
         //Assert
         Optional<Pagamento> result = repository.findById(existingId);
         Assertions.assertFalse(result.isPresent());
+    }
+
+    @Test
+    @DisplayName("Dado parâmetros válidos e Id nulo, quando chamar Criar Pagamento então deve instanciar um Pagamento")
+    public void givenValidParamsAndIdIsNull_whenCallCreatePagamento_thenInstantieAPagamento(){
+
+        Pagamento pagamento = Factory.createPagamento();
+        pagamento.setId(null);
+        pagamento = repository.save(pagamento);
+        Assertions.assertNotNull(pagamento.getId());
+        Assertions.assertEquals(countTotalPagamento + 1, pagamento.getId());
     }
 
 
