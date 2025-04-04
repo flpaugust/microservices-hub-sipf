@@ -3,6 +3,7 @@ package com.github.cidarosa.ms_pagamento.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.cidarosa.ms_pagamento.dto.PagamentoDTO;
 import com.github.cidarosa.ms_pagamento.service.PagamentoService;
+import com.github.cidarosa.ms_pagamento.service.exceptions.ResourceNotFoundException;
 import com.github.cidarosa.ms_pagamento.tests.Factory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest
@@ -50,7 +52,11 @@ public class PagamentoControllerTest {
         // simulando o comportamento do Service - getAll
         Mockito.when(service.getAll()).thenReturn(list);
 
-        
+        // simulando o comportamento do Service -  getById
+        // id existe
+        Mockito.when(service.getById(existingId)).thenReturn(dto);
+        // id não existe
+        Mockito.when(service.getById(nonExistingId)).thenThrow(ResourceNotFoundException.class);
 
 
     }
@@ -65,5 +71,25 @@ public class PagamentoControllerTest {
         result.andExpect(status().isOk());
     }
 
+    @Test
+    public void getByIdShouldReturnPagamentoDTOWhenIdExists() throws Exception {
 
+        ResultActions result = mockMvc.perform(get("/pagamentos/{id}", existingId)
+                .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isOk());
+        result.andExpect(jsonPath("$.id").exists());
+        result.andExpect(jsonPath("$.valor").value(32.25));
+        result.andExpect(jsonPath("$.status").exists());
+    }
+
+    @Test
+    public void getByIdShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() throws Exception {
+
+        ResultActions result = mockMvc.perform(get("/pagamentos/{id}", nonExistingId)
+                .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isNotFound());
+
+    }
 }
