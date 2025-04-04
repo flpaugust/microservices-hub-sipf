@@ -79,6 +79,13 @@ public class PagamentoControllerTest {
         Mockito.when(service.updatePagamento(eq(nonExistiId), any()))
                 .thenThrow(ResourceNotFoundException.class);
 
+        // para quando o método é void
+        // simulando o comportamento do service - deletePagamento
+        Mockito.doNothing().when(service).deletePagamento(existingId);
+        Mockito.doThrow(ResourceNotFoundException.class)
+                .when(service).deletePagamento(nonExistiId);
+
+
 
     }
 
@@ -173,6 +180,22 @@ public class PagamentoControllerTest {
                         .content(jsonRequestBody)                          // RequestBody
                         .contentType(MediaType.APPLICATION_JSON)           // request
                         .accept(MediaType.APPLICATION_JSON))               // response
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void deletePagamentoShouldDoNothingWhenIdExist() throws Exception {
+        mockMvc.perform(delete("/pagamentos/{id}", existingId)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void deletePagamentoShouldReturnNotFoundExceptionWhenIdDoesNotExist() throws Exception {
+        mockMvc.perform(delete("/pagamentos/{id}", nonExistiId)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }
