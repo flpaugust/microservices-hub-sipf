@@ -20,5 +20,11 @@ public class Factory {
         Pagamento pagamento = createPagamento();
         return new PagamentoDTO(pagamento);
     }
+    public static PagamentoDTO createNewPagamentoDTO() {
+        Pagamento pagamento = createPagamento();
+        pagamento.setId(null); // simula objeto ainda não persistido
+        return new PagamentoDTO(pagamento);
+    }
+
 
 }
