@@ -1,5 +1,6 @@
 package com.github.cidarosa.ms_pagamento.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.cidarosa.ms_pagamento.dto.PagamentoDTO;
 import com.github.cidarosa.ms_pagamento.service.PagamentoService;
@@ -18,8 +19,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -63,6 +64,13 @@ public class PagamentoControllerTest {
         // simulando o comportamento do createPagamento
         Mockito.when(service.createPagamento(any())).thenReturn(dto);
 
+        // simulando o comportamento do updatePagamento
+        // quando id existe
+        Mockito.when(service.updatePagamento(eq(existingId), any())).thenReturn(dto);
+        //quando id não existe
+        Mockito.when(service.updatePagamento(eq(nonExistingId), any()))
+                .thenThrow(ResourceNotFoundException.class);
+
 
     }
 
@@ -98,7 +106,7 @@ public class PagamentoControllerTest {
     }
 
     @Test
-    public void createPaamentoShouldReturnPagamentoDTOCreated() throws Exception {
+    public void createPagamentoShouldReturnPagamentoDTOCreated() throws Exception {
 
         PagamentoDTO newPagamentoDTO = Factory.createNewPagamentoDTO();
 
@@ -116,8 +124,37 @@ public class PagamentoControllerTest {
                 .andExpect(jsonPath("$.status").exists())
                 .andExpect(jsonPath("$.pedidoId").exists())
                 .andExpect(jsonPath("$.formaDePagamentoId").exists());
+    }
 
+    @Test
+    public void updatePagamentoShouldReturnPagamentoDTOWhenIdExists() throws Exception {
 
+        String jsonRequestBody = objectMapper.writeValueAsString(dto);
 
+        mockMvc.perform(put("/pagamentos/{id}", existingId)
+                        .content(jsonRequestBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.valor").exists())
+                .andExpect(jsonPath("$.status").exists())
+                .andExpect(jsonPath("$.pedidoId").exists())
+                .andExpect(jsonPath("$.formaDePagamentoId").exists());
+
+    }
+
+    @Test
+    public void updatePagamentoShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() throws Exception {
+
+        String jsonRequestBody = objectMapper.writeValueAsString(dto);
+
+        mockMvc.perform(put("/pagamentos/{id}", nonExistingId)
+                        .content(jsonRequestBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+
+                .andDo(print())
+                .andExpect(status().isNotFound());
     }
 }
