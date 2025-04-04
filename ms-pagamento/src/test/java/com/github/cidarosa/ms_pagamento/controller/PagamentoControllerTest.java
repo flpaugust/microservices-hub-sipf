@@ -82,6 +82,31 @@ public class PagamentoControllerTest {
         result.andExpect(status().isOk());
     }
 
+    @Test
+    public void getByIdShouldReturnPagamentoDTOWhenIdExist() throws Exception {
+        ResultActions result = mockMvc.perform(get("/pagamentos/{id}", existingId)
+                .accept(MediaType.APPLICATION_JSON));
+
+        // Assertions
+        result.andExpect(status().isOk());
+
+        // verifica se tem os campos em result
+        // $ - acessar o objeto result
+        result.andExpect(jsonPath("$.id").exists());
+        result.andExpect(jsonPath("$.valor").exists());
+        result.andExpect(jsonPath("$.status").exists());
+    }
+
+    @Test
+    public void getByIdShouldReturnNotFoundExceptionWhenIdDoesNotExist() throws Exception {
+        ResultActions result = mockMvc.perform(get("/pagamentos/{id}", nonExistiId)
+                .accept(MediaType.APPLICATION_JSON));
+
+        // Assertions
+        result.andExpect(status().isNotFound());
+    }
+
+
 
 
 
