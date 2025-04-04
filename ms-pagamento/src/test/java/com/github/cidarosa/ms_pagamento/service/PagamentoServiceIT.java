@@ -19,21 +19,21 @@ public class PagamentoServiceIT {
     @Autowired
     private PagamentoRepository repository;
 
-    private Long existinId;
-    private Long nonExistinId;
+    private Long existingId;
+    private Long nonExistingId;
     private Long countTotalPagamento;
 
     @BeforeEach
     void setup() throws Exception {
-        existinId = 1L;
-        nonExistinId = 100L;
+        existingId = 1L;
+        nonExistingId = 100L;
         countTotalPagamento = 6L;
     }
 
     @Test
     public void deletePagamentoShouldDoNotingWhenIdExists() {
 
-        service.deletePagamento(existinId);
+        service.deletePagamento(existingId);
         Assertions.assertEquals(countTotalPagamento - 1, repository.count());
     }
 
@@ -42,7 +42,7 @@ public class PagamentoServiceIT {
 
         Assertions.assertThrows(ResourceNotFoundException.class,
                 () -> {
-                    service.deletePagamento(nonExistinId);
+                    service.deletePagamento(nonExistingId);
                 });
     }
     @Test
