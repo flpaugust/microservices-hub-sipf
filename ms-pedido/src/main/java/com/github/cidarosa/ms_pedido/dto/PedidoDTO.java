@@ -2,6 +2,7 @@ package com.github.cidarosa.ms_pedido.dto;
 
 
 import com.github.cidarosa.ms_pedido.entities.ItemDoPedido;
+import com.github.cidarosa.ms_pedido.entities.Pedido;
 import com.github.cidarosa.ms_pedido.entities.Status;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.EnumType;
@@ -13,7 +14,6 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.br.CPF;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -35,11 +35,23 @@ public class PedidoDTO {
     @Size(min = 11, max = 11, message = "O CPF deve ter 11 caracteres")
     private String cpf;
 
-    @Enumerated(EnumType.STRING)
     private LocalDate data;
+
+    @Enumerated(EnumType.STRING)
     private Status status;
 
-    @OneToMany(mappedBy = "pedido", cascade = CascadeType.PERSIST)
-    private List<@Valid ItemDoPedido> itens = new ArrayList<>();
+  private List<@Valid ItemDoPedidoDTO> itens = new ArrayList<>();
 
+    public PedidoDTO(Pedido entity) {
+        id = entity.getId();
+        nome = entity.getNome();
+        cpf = entity.getCpf();
+        data = entity.getData();
+        status = entity.getStatus();
+
+        for (ItemDoPedido item : entity.getItens()){
+            ItemDoPedidoDTO itemDTO = new ItemDoPedidoDTO(item);
+            itens.add(itemDTO);
+        }
+    }
 }
