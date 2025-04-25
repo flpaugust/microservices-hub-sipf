@@ -194,4 +194,13 @@ public class PagamentoControllerIT {
                 .andExpect(status().isNoContent());
     }
 
+    @Test
+    public void deleteShouldReturnNotFoundWhenIdDoesNotExist() throws Exception {
+
+        mockMvc.perform(delete("/pagamentos/{id}", nonExistingId)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
 }
