@@ -155,7 +155,19 @@ public class PagamentoControllerIT {
                 .andExpect(jsonPath("$.status").value("CRIADO"))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(status().isOk());
+    }
 
+    @Test
+    public void updateShouldReturnNotFoundWhenIdDoesNotExist() throws Exception {
+
+        String jsonRequestBody = objectMapper.writeValueAsString(dto);
+
+        mockMvc.perform(put("/pagamentos/{id}", nonExistingId)
+                        .content(jsonRequestBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isNotFound());
     }
 
 
