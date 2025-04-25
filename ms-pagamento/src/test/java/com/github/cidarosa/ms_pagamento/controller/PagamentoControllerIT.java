@@ -100,5 +100,28 @@ public class PagamentoControllerIT {
 
     }
 
+    @Test
+    public void createShouldPersistPagamentoWithRequiredFields() throws Exception {
+
+        dto = Factory.createNewPagamentoDTOWithRequiredFields();
+        String jsonRequestBody = objectMapper.writeValueAsString(dto);
+
+        mockMvc.perform(post("/pagamentos")
+                        .content(jsonRequestBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"))
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.valor").exists())
+                .andExpect(jsonPath("$.valor").value(dto.getValor()))
+                .andExpect(jsonPath("$.status").value("CRIADO"))
+                .andExpect(jsonPath("$.nome").isEmpty())
+                .andExpect(jsonPath("$.validade").isEmpty());
+
+
+    }
+
 
 }
