@@ -56,14 +56,25 @@ public class PagamentoControllerIT {
     public void getByIdShouldReturnPagamentoDTOWhenIdExists() throws Exception {
 
         mockMvc.perform(get("/pagamentos/{id}", existingId)
-                .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("id").value(1))
                 .andExpect(jsonPath("id").exists())
                 .andExpect(jsonPath("nome").isString())
                 .andExpect(jsonPath("nome").value("Amadeus Mozart"))
                 .andExpect(jsonPath("status").value("CRIADO"));
+    }
+
+    @Test
+    public void getByIdShouldReturnNotFoundExceptionWhenIdDoesNotExist() throws Exception {
+
+        mockMvc.perform(get("/pagamentos/{id}", nonExistingId)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
 
