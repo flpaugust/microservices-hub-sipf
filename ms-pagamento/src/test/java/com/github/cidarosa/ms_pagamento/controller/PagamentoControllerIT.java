@@ -32,17 +32,17 @@ public class PagamentoControllerIT {
     private ObjectMapper objectMapper;
 
     @BeforeEach
-    void setup() throws Exception{
+    void setup() throws Exception {
         existingId = 1L;
         nonExistingId = 100L;
         dto = Factory.createPagamentoDTO();
     }
 
     @Test
-    public void getAllShouldReturnListAllPagamentos() throws Exception{
+    public void getAllShouldReturnListAllPagamentos() throws Exception {
 
         mockMvc.perform(get("/pagamentos")
-                .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -50,9 +50,21 @@ public class PagamentoControllerIT {
                 .andExpect(jsonPath("[0].nome").isString())
                 .andExpect(jsonPath("[0].nome").value("Amadeus Mozart"))
                 .andExpect(jsonPath("[5].status").value("CONFIRMADO"));
-
-
-
-
     }
+
+    @Test
+    public void getByIdShouldReturnPagamentoDTOWhenIdExists() throws Exception {
+
+        mockMvc.perform(get("/pagamentos/{id}", existingId)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("id").exists())
+                .andExpect(jsonPath("nome").isString())
+                .andExpect(jsonPath("nome").value("Amadeus Mozart"))
+                .andExpect(jsonPath("status").value("CRIADO"));
+    }
+
+
 }
