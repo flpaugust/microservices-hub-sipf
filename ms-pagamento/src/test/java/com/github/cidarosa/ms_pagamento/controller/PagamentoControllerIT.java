@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.cidarosa.ms_pagamento.dto.PagamentoDTO;
 import com.github.cidarosa.ms_pagamento.tests.Factory;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -119,8 +120,23 @@ public class PagamentoControllerIT {
                 .andExpect(jsonPath("$.status").value("CRIADO"))
                 .andExpect(jsonPath("$.nome").isEmpty())
                 .andExpect(jsonPath("$.validade").isEmpty());
+    }
 
+    @Test
+    @DisplayName(" create deve lançar exception quando dados inválidos e retornar status 422")
+    public void createShouldThrowsExceptionWhenInvalidData() throws Exception {
 
+        dto = Factory.createNewPagamentoDTOWithInvalidData();
+        String jsonRequestBody = objectMapper.writeValueAsString(dto);
+
+        mockMvc.perform(post("/pagamentos")
+                        .content(jsonRequestBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                // ou
+                .andExpect(status().isUnprocessableEntity());
     }
 
 

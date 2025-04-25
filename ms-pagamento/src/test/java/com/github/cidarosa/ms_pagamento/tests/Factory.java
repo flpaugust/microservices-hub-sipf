@@ -40,4 +40,15 @@ public class Factory {
 
         return new PagamentoDTO(pagamento);
     }
+
+    public static PagamentoDTO createNewPagamentoDTOWithInvalidData() {
+
+        Pagamento pagamento = createPagamento();
+        pagamento.setId(null);
+        pagamento.setValor(BigDecimal.valueOf(-32.5));
+        pagamento.setPedidoId(null);
+        pagamento.setFormaDePagamentoId(null);
+
+        return new PagamentoDTO(pagamento);
+    }
 }
