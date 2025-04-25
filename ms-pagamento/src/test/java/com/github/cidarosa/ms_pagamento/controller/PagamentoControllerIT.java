@@ -170,5 +170,19 @@ public class PagamentoControllerIT {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    public void updateShouldThrowsExceptionWhenInvalidData() throws Exception {
+
+        dto = Factory.createNewPagamentoDTOWithInvalidData();
+
+        String jsonRequestBody = objectMapper.writeValueAsString(dto);
+
+        mockMvc.perform(put("/pagamentos/{id}", existingId)
+                        .content(jsonRequestBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity());
+    }
 
 }
